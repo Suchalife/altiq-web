@@ -49,11 +49,34 @@ const ROLES = [
 ];
 
 export default function CareersPage() {
-  const [hovered, setHovered]     = useState<number | null>(null);
-  const [fileName, setFileName]   = useState<string>("");
-  const [submitted, setSubmitted] = useState(false);
+  const [hovered, setHovered]           = useState<number | null>(null);
+  const [fileName, setFileName]         = useState<string>("");
+  const [resumeFile, setResumeFile]     = useState<File | null>(null);
+  const [submitted, setSubmitted]       = useState(false);
+  const [loading, setLoading]           = useState(false);
+  const [error, setError]               = useState("");
+  const [selectedRole, setSelectedRole] = useState<string>("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const formRef = useRef<HTMLFormElement>(null);
+  // Controlled fields
+  const [appName, setAppName]       = useState("");
+  const [appEmail, setAppEmail]     = useState("");
+  const [appPhone, setAppPhone]     = useState("");
+  const [appMessage, setAppMessage] = useState("");
+
+  const formRef     = useRef<HTMLFormElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  /* Close dropdown on outside click */
+  useEffect(() => {
+    function handleOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -91,9 +114,55 @@ export default function CareersPage() {
     return () => ctx.revert();
   }, []);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitted(true);
+    if (!selectedRole) { setError("Please select a position."); return; }
+    setLoading(true);
+    setError("");
+
+    try {
+      // Convert resume file to base64 if provided
+      let resumeBase64   = "";
+      let resumeFileName = "";
+      let resumeMimeType = "";
+
+      if (resumeFile) {
+        resumeFileName = resumeFile.name;
+        resumeMimeType = resumeFile.type || "application/octet-stream";
+        const buffer   = await resumeFile.arrayBuffer();
+        const bytes    = new Uint8Array(buffer);
+        let binary     = "";
+        bytes.forEach(b => (binary += String.fromCharCode(b)));
+        resumeBase64   = btoa(binary);
+      }
+
+      const res = await fetch("/api/careers", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({
+          position:       selectedRole,
+          name:           appName,
+          email:          appEmail,
+          phone:          appPhone,
+          message:        appMessage,
+          resumeBase64,
+          resumeFileName,
+          resumeMimeType,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        setSubmitted(true);
+      } else {
+        setError("Something went wrong. Please try again or email us directly.");
+      }
+    } catch {
+      setError("Network error. Please check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -381,33 +450,143 @@ export default function CareersPage() {
                 maxWidth: "800px",
               }}
             >
-              {/* Position */}
+              {/* Position — custom dropdown */}
               <div style={{ gridColumn: "1 / -1" }}>
-                <label style={labelStyle}>Position</label>
-                <select required style={inputStyle}>
-                  <option value="">Select a role</option>
-                  {ROLES.map(r => (
-                    <option key={r.title} value={r.title}>{r.title}</option>
-                  ))}
-                </select>
+                <label style={labelStyle}>Position *</label>
+
+                {/* Hidden real input for form validation */}
+                <input
+                  type="hidden"
+                  name="position"
+                  value={selectedRole}
+                  required
+                />
+
+                <div ref={dropdownRef} style={{ position: "relative" }}>
+
+                  {/* Trigger */}
+                  <button
+                    type="button"
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    style={{
+                      width: "100%",
+                      padding: "0.85rem 1rem",
+                      background: "var(--bg-subtle)",
+                      border: `1.5px solid ${dropdownOpen ? "var(--fg)" : "var(--border-2)"}`,
+                      borderRadius: "10px",
+                      color: selectedRole ? "var(--fg)" : "var(--fg-faint)",
+                      fontSize: "0.9rem",
+                      fontFamily: "inherit",
+                      cursor: "pointer",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      textAlign: "left",
+                      transition: "border-color 0.2s",
+                    }}
+                  >
+                    <span>{selectedRole || "Select a role"}</span>
+                    <svg
+                      width="16" height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      style={{
+                        color: "var(--fg-muted)",
+                        flexShrink: 0,
+                        transform: dropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
+                        transition: "transform 0.25s cubic-bezier(0.22,1,0.36,1)",
+                      }}
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+
+                  {/* Dropdown panel */}
+                  {dropdownOpen && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "calc(100% + 6px)",
+                        left: 0,
+                        right: 0,
+                        background: "var(--bg-subtle)",
+                        border: "1.5px solid var(--border)",
+                        borderRadius: "12px",
+                        zIndex: 50,
+                        overflow: "hidden",
+                        boxShadow: "0 12px 40px rgba(26,20,16,0.10)",
+                        animation: "dropdownIn 0.2s cubic-bezier(0.22,1,0.36,1)",
+                      }}
+                    >
+                      {ROLES.map((r, i) => (
+                        <button
+                          key={r.title}
+                          type="button"
+                          onClick={() => {
+                            setSelectedRole(r.title);
+                            setDropdownOpen(false);
+                          }}
+                          style={{
+                            width: "100%",
+                            padding: "0.85rem 1.1rem",
+                            background: selectedRole === r.title ? "var(--surface)" : "transparent",
+                            border: "none",
+                            borderTop: i > 0 ? "1px solid var(--border-2)" : "none",
+                            color: "var(--fg)",
+                            fontSize: "0.9rem",
+                            fontFamily: "inherit",
+                            cursor: "pointer",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            textAlign: "left",
+                            transition: "background 0.15s",
+                            fontWeight: selectedRole === r.title ? 600 : 400,
+                          }}
+                          onMouseEnter={e => (e.currentTarget.style.background = "var(--bg-deep)")}
+                          onMouseLeave={e => (e.currentTarget.style.background = selectedRole === r.title ? "var(--surface)" : "transparent")}
+                        >
+                          <span>{r.title}</span>
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                            <span style={{ fontSize: "0.72rem", color: "var(--fg-faint)", fontWeight: 400 }}>
+                              {r.dept}
+                            </span>
+                            {selectedRole === r.title && (
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                            )}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Name */}
               <div>
-                <label style={labelStyle}>Name</label>
-                <input required type="text" placeholder="Your full name" style={inputStyle} />
+                <label style={labelStyle}>Name *</label>
+                <input required type="text" placeholder="Your full name" style={inputStyle}
+                  value={appName} onChange={e => setAppName(e.target.value)} />
               </div>
 
               {/* Email */}
               <div>
-                <label style={labelStyle}>Email</label>
-                <input required type="email" placeholder="you@email.com" style={inputStyle} />
+                <label style={labelStyle}>Email *</label>
+                <input required type="email" placeholder="you@email.com" style={inputStyle}
+                  value={appEmail} onChange={e => setAppEmail(e.target.value)} />
               </div>
 
               {/* Phone */}
               <div style={{ gridColumn: "1 / -1" }}>
                 <label style={labelStyle}>Phone</label>
-                <input type="tel" placeholder="+1 (000) 000-0000" style={inputStyle} />
+                <input type="tel" placeholder="+1 (000) 000-0000" style={inputStyle}
+                  value={appPhone} onChange={e => setAppPhone(e.target.value)} />
               </div>
 
               {/* Message */}
@@ -417,6 +596,7 @@ export default function CareersPage() {
                   rows={4}
                   placeholder="Tell us why you want to work at altIQ…"
                   style={{ ...inputStyle, resize: "vertical", lineHeight: 1.6 }}
+                  value={appMessage} onChange={e => setAppMessage(e.target.value)}
                 />
               </div>
 
@@ -445,7 +625,11 @@ export default function CareersPage() {
                     type="file"
                     accept=".pdf,.doc,.docx"
                     style={{ display: "none" }}
-                    onChange={e => setFileName(e.target.files?.[0]?.name ?? "")}
+                    onChange={e => {
+                      const file = e.target.files?.[0] ?? null;
+                      setResumeFile(file);
+                      setFileName(file?.name ?? "");
+                    }}
                   />
                 </label>
               </div>
@@ -454,6 +638,7 @@ export default function CareersPage() {
               <div style={{ gridColumn: "1 / -1", marginTop: "0.5rem" }}>
                 <button
                   type="submit"
+                  disabled={loading}
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
@@ -465,21 +650,21 @@ export default function CareersPage() {
                     color: "var(--bg)",
                     fontSize: "0.9rem",
                     fontWeight: 500,
-                    cursor: "pointer",
+                    cursor: loading ? "not-allowed" : "pointer",
+                    opacity: loading ? 0.65 : 1,
                     transition: "background 0.2s, color 0.2s",
                     fontFamily: "inherit",
                   }}
-                  onMouseEnter={e => {
-                    (e.currentTarget as HTMLButtonElement).style.background = "transparent";
-                    (e.currentTarget as HTMLButtonElement).style.color = "var(--fg)";
-                  }}
-                  onMouseLeave={e => {
-                    (e.currentTarget as HTMLButtonElement).style.background = "var(--fg)";
-                    (e.currentTarget as HTMLButtonElement).style.color = "var(--bg)";
-                  }}
                 >
-                  Submit Application →
+                  {loading ? "Submitting…" : "Submit Application →"}
                 </button>
+
+                {/* Error message */}
+                {error && (
+                  <p style={{ fontSize: "0.85rem", color: "#c0392b", margin: "0.5rem 0 0", fontWeight: 500 }}>
+                    ⚠ {error}
+                  </p>
+                )}
               </div>
             </form>
           )}
@@ -489,6 +674,13 @@ export default function CareersPage() {
 
       </main>
       <Footer />
+
+      <style>{`
+        @keyframes dropdownIn {
+          from { opacity: 0; transform: translateY(-8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </>
   );
 }

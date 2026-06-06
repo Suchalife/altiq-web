@@ -42,8 +42,17 @@ const inputStyle: React.CSSProperties = {
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading]     = useState(false);
+  const [error, setError]         = useState("");
   const [selected, setSelected]   = useState<string[]>([]);
   const [otherText, setOtherText] = useState("");
+
+  // Controlled field values
+  const [name, setName]       = useState("");
+  const [company, setCompany] = useState("");
+  const [email, setEmail]     = useState("");
+  const [phone, setPhone]     = useState("");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -59,9 +68,38 @@ export default function ContactPage() {
     setSelected((prev) => prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]);
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          company,
+          email,
+          phone,
+          interests: selected,
+          otherDomain: otherText,
+          message,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        setSubmitted(true);
+      } else {
+        setError("Something went wrong. Please try again or email us directly.");
+      }
+    } catch {
+      setError("Network error. Please check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -160,6 +198,7 @@ export default function ContactPage() {
                     <div>
                       <label style={labelStyle}>Name *</label>
                       <input required type="text" placeholder="Your full name" style={inputStyle}
+                        value={name} onChange={e => setName(e.target.value)}
                         onFocus={e => ((e.target as HTMLInputElement).style.borderColor = "var(--fg)")}
                         onBlur={e  => ((e.target as HTMLInputElement).style.borderColor = "var(--border-2)")}
                       />
@@ -167,6 +206,7 @@ export default function ContactPage() {
                     <div>
                       <label style={labelStyle}>Company</label>
                       <input type="text" placeholder="Company name" style={inputStyle}
+                        value={company} onChange={e => setCompany(e.target.value)}
                         onFocus={e => ((e.target as HTMLInputElement).style.borderColor = "var(--fg)")}
                         onBlur={e  => ((e.target as HTMLInputElement).style.borderColor = "var(--border-2)")}
                       />
@@ -178,6 +218,7 @@ export default function ContactPage() {
                     <div>
                       <label style={labelStyle}>Email *</label>
                       <input required type="email" placeholder="you@company.com" style={inputStyle}
+                        value={email} onChange={e => setEmail(e.target.value)}
                         onFocus={e => ((e.target as HTMLInputElement).style.borderColor = "var(--fg)")}
                         onBlur={e  => ((e.target as HTMLInputElement).style.borderColor = "var(--border-2)")}
                       />
@@ -185,6 +226,7 @@ export default function ContactPage() {
                     <div>
                       <label style={labelStyle}>Phone</label>
                       <input type="tel" placeholder="+1 000 000 0000" style={inputStyle}
+                        value={phone} onChange={e => setPhone(e.target.value)}
                         onFocus={e => ((e.target as HTMLInputElement).style.borderColor = "var(--fg)")}
                         onBlur={e  => ((e.target as HTMLInputElement).style.borderColor = "var(--border-2)")}
                       />
@@ -269,18 +311,27 @@ export default function ContactPage() {
                       rows={5}
                       placeholder="Tell us about your business and what you're trying to solve…"
                       style={{ ...inputStyle, resize: "vertical", lineHeight: 1.65 }}
+                      value={message} onChange={e => setMessage(e.target.value)}
                       onFocus={e => ((e.target as HTMLTextAreaElement).style.borderColor = "var(--fg)")}
                       onBlur={e  => ((e.target as HTMLTextAreaElement).style.borderColor = "var(--border-2)")}
                     />
                   </div>
 
+                  {/* Error message */}
+                  {error && (
+                    <p style={{ fontSize: "0.85rem", color: "#c0392b", margin: 0, fontWeight: 500 }}>
+                      ⚠ {error}
+                    </p>
+                  )}
+
                   {/* Submit */}
                   <button
                     type="submit"
+                    disabled={loading}
                     className="btn btn-primary"
-                    style={{ fontSize: "0.95rem", padding: "0.85rem 2rem", alignSelf: "flex-start" }}
+                    style={{ fontSize: "0.95rem", padding: "0.85rem 2rem", alignSelf: "flex-start", opacity: loading ? 0.65 : 1, cursor: loading ? "not-allowed" : "pointer" }}
                   >
-                    Send Message →
+                    {loading ? "Sending…" : "Send Message →"}
                   </button>
                 </form>
               )}

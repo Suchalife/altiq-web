@@ -144,11 +144,18 @@ export default function ContactPage() {
               <RevealWrapper>
                 <div style={{ marginBottom: "3rem" }}>
                   <p className="label" style={{ marginBottom: "0.6rem" }}><span className="label-dot" />Direct Email</p>
-                  <a href={`mailto:${siteConfig.email}`} style={{ fontFamily: "var(--font-sora), sans-serif", fontSize: "1.1rem", fontWeight: 600, color: "var(--fg)", textDecoration: "none", transition: "opacity 0.2s", display: "block" }}
+                  <a href={`mailto:${siteConfig.email}`} style={{ fontFamily: "var(--font-sora), sans-serif", fontSize: "1.1rem", fontWeight: 600, color: "var(--fg)", textDecoration: "none", transition: "opacity 0.2s", display: "block", marginBottom: "1.25rem" }}
                     onMouseEnter={e => ((e.currentTarget as HTMLAnchorElement).style.opacity = "0.7")}
                     onMouseLeave={e => ((e.currentTarget as HTMLAnchorElement).style.opacity = "1")}
                   >
                     {siteConfig.email}
+                  </a>
+                  <p className="label" style={{ marginBottom: "0.6rem" }}><span className="label-dot" />Phone</p>
+                  <a href="tel:+13685956128" style={{ fontFamily: "var(--font-sora), sans-serif", fontSize: "1.1rem", fontWeight: 600, color: "var(--fg)", textDecoration: "none", transition: "opacity 0.2s", display: "block" }}
+                    onMouseEnter={e => ((e.currentTarget as HTMLAnchorElement).style.opacity = "0.7")}
+                    onMouseLeave={e => ((e.currentTarget as HTMLAnchorElement).style.opacity = "1")}
+                  >
+                    +1 (368) 595-6128
                   </a>
                 </div>
 
@@ -201,6 +208,7 @@ export default function ContactPage() {
                         value={name} onChange={e => setName(e.target.value)}
                         onFocus={e => ((e.target as HTMLInputElement).style.borderColor = "var(--fg)")}
                         onBlur={e  => ((e.target as HTMLInputElement).style.borderColor = "var(--border-2)")}
+                        suppressHydrationWarning
                       />
                     </div>
                     <div>
@@ -209,6 +217,7 @@ export default function ContactPage() {
                         value={company} onChange={e => setCompany(e.target.value)}
                         onFocus={e => ((e.target as HTMLInputElement).style.borderColor = "var(--fg)")}
                         onBlur={e  => ((e.target as HTMLInputElement).style.borderColor = "var(--border-2)")}
+                        suppressHydrationWarning
                       />
                     </div>
                   </div>
@@ -221,6 +230,7 @@ export default function ContactPage() {
                         value={email} onChange={e => setEmail(e.target.value)}
                         onFocus={e => ((e.target as HTMLInputElement).style.borderColor = "var(--fg)")}
                         onBlur={e  => ((e.target as HTMLInputElement).style.borderColor = "var(--border-2)")}
+                        suppressHydrationWarning
                       />
                     </div>
                     <div>
@@ -229,6 +239,7 @@ export default function ContactPage() {
                         value={phone} onChange={e => setPhone(e.target.value)}
                         onFocus={e => ((e.target as HTMLInputElement).style.borderColor = "var(--fg)")}
                         onBlur={e  => ((e.target as HTMLInputElement).style.borderColor = "var(--border-2)")}
+                        suppressHydrationWarning
                       />
                     </div>
                   </div>
@@ -298,6 +309,7 @@ export default function ContactPage() {
                           style={{ ...inputStyle }}
                           onFocus={e  => ((e.target as HTMLInputElement).style.borderColor = "var(--fg)")}
                           onBlur={e   => ((e.target as HTMLInputElement).style.borderColor = "var(--border-2)")}
+                          suppressHydrationWarning
                         />
                       </div>
                     )}
@@ -314,6 +326,7 @@ export default function ContactPage() {
                       value={message} onChange={e => setMessage(e.target.value)}
                       onFocus={e => ((e.target as HTMLTextAreaElement).style.borderColor = "var(--fg)")}
                       onBlur={e  => ((e.target as HTMLTextAreaElement).style.borderColor = "var(--border-2)")}
+                      suppressHydrationWarning
                     />
                   </div>
 

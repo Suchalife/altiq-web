@@ -4,11 +4,14 @@ export const siteConfig = {
   description:
     "We help businesses identify, design, and deploy AI systems that solve real operational problems — from strategy to production.",
   email: "hello@altiq.ai",
+  phone: "+1 (368) 595-6128",
+  phoneHref: "tel:+13685956128",
   copyright: "2025",
   nav: [
     { label: "Work",     href: "/work"     },
     { label: "Services", href: "/services" },
     { label: "About",    href: "/about"    },
+    { label: "Careers",  href: "/careers"  },
     { label: "Contact",  href: "/contact"  },
   ],
   social: {

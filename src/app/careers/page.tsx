@@ -572,21 +572,21 @@ export default function CareersPage() {
               <div>
                 <label style={labelStyle}>Name *</label>
                 <input required type="text" placeholder="Your full name" style={inputStyle}
-                  value={appName} onChange={e => setAppName(e.target.value)} />
+                  value={appName} onChange={e => setAppName(e.target.value)} suppressHydrationWarning />
               </div>
 
               {/* Email */}
               <div>
                 <label style={labelStyle}>Email *</label>
                 <input required type="email" placeholder="you@email.com" style={inputStyle}
-                  value={appEmail} onChange={e => setAppEmail(e.target.value)} />
+                  value={appEmail} onChange={e => setAppEmail(e.target.value)} suppressHydrationWarning />
               </div>
 
               {/* Phone */}
               <div style={{ gridColumn: "1 / -1" }}>
                 <label style={labelStyle}>Phone</label>
                 <input type="tel" placeholder="+1 (000) 000-0000" style={inputStyle}
-                  value={appPhone} onChange={e => setAppPhone(e.target.value)} />
+                  value={appPhone} onChange={e => setAppPhone(e.target.value)} suppressHydrationWarning />
               </div>
 
               {/* Message */}
@@ -597,6 +597,7 @@ export default function CareersPage() {
                   placeholder="Tell us why you want to work at altIQ…"
                   style={{ ...inputStyle, resize: "vertical", lineHeight: 1.6 }}
                   value={appMessage} onChange={e => setAppMessage(e.target.value)}
+                  suppressHydrationWarning
                 />
               </div>
 

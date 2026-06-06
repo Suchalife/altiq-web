@@ -52,14 +52,6 @@ export default function Nav() {
 
           {/* Right actions */}
           <div className="nav-actions">
-            <Link
-              href="/contact"
-              className="btn btn-primary"
-              style={{ fontSize: "0.825rem", padding: "0.55rem 1.3rem" }}
-            >
-              Book a Call
-            </Link>
-
             {/* Hamburger */}
             <button
               onClick={() => setOpen(!open)}
@@ -128,7 +120,7 @@ export default function Nav() {
         </nav>
         <div style={{ paddingTop: "2.5rem" }}>
           <Link href="/contact" className="btn btn-primary">
-            Book a Free Consultation
+            Get in Touch
           </Link>
         </div>
       </div>

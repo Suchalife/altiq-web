@@ -58,7 +58,6 @@ export default function Nav() {
               aria-label={open ? "Close menu" : "Open menu"}
               aria-expanded={open}
               style={{
-                display: "none",
                 flexDirection: "column",
                 gap: "5px",
                 background: "none",
@@ -126,8 +125,8 @@ export default function Nav() {
       </div>
 
       <style>{`
+        .mobile-hamburger { display: none; }
         @media (max-width: 767px) {
-          .btn-primary { display: none !important; }
           .mobile-hamburger { display: flex !important; }
         }
       `}</style>

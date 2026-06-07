@@ -7,14 +7,15 @@ import Footer from "@/components/Footer";
 import RevealWrapper from "@/components/RevealWrapper";
 import { PROJECTS, getProject } from "@/config/projects";
 
-interface Props { params: { slug: string }; }
+interface Props { params: Promise<{ slug: string }>; }
 
 export function generateStaticParams() {
   return PROJECTS.map((p) => ({ slug: p.slug }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
-  const p = getProject(params.slug);
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const p = getProject(slug);
   if (!p) return { title: "Project Not Found" };
   return {
     title: `${p.name} — altIQ Case Study`,
@@ -31,8 +32,9 @@ function A() {
   );
 }
 
-export default function CaseStudyPage({ params }: Props) {
-  const p = getProject(params.slug);
+export default async function CaseStudyPage({ params }: Props) {
+  const { slug } = await params;
+  const p = getProject(slug);
   if (!p) notFound();
 
   const otherProjects = PROJECTS.filter((pr) => pr.slug !== p.slug);

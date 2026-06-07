@@ -333,8 +333,7 @@ export const PROJECTS: Project[] = [
 
     logo: "/images/observex.jpg",
 
-    // Pending — user to supply
-    heroImage: null,
+    heroImage: "/images/work/observex.png",
     logoOnDark: false,
 
     // FACT — from logo colours (periwinkle blue)

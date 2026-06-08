@@ -21,7 +21,7 @@ const ContentSecurityPolicy = [
 
 const nextConfig: NextConfig = {
   images: {
-    qualities: [75, 85],
+    qualities: [75, 80, 85, 90, 95],
   },
   async headers() {
     return [

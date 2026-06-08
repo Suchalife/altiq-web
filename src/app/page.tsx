@@ -6,7 +6,6 @@ import FeaturedWorkSection from "@/components/FeaturedWorkSection";
 import WhyAltiqSection from "@/components/WhyAltiqSection";
 import ProcessSection from "@/components/ProcessSection";
 import CtaSection from "@/components/CtaSection";
-import { siteConfig } from "@/config/site";
 import RevealWrapper from "@/components/RevealWrapper";
 
 /* ── Manifesto ───────────────────────────────────────────────── */
@@ -32,65 +31,7 @@ function ManifestoSection() {
   );
 }
 
-/* ── Tech Stack ──────────────────────────────────────────────── */
-function TechStackSection() {
-  const stack = siteConfig.techStack;
-  const categories = Object.keys(stack) as (keyof typeof stack)[];
-  return (
-    <section style={{ background: "var(--bg)", borderTop: "1px solid var(--border-2)" }}>
-      <div style={{ maxWidth: "var(--max-w)", margin: "0 auto", padding: "5rem 2rem" }}>
-        <RevealWrapper>
-          <p className="label" style={{ marginBottom: "2.5rem" }}>
-            <span className="label-dot" />
-            Built With
-          </p>
-        </RevealWrapper>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "2rem" }}>
-          {categories.map((cat, i) => (
-            <RevealWrapper key={cat} delay={i * 60}>
-              <div>
-                <p style={{ fontSize: "0.68rem", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--fg-faint)", marginBottom: "0.85rem" }}>
-                  {cat}
-                </p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
-                  {(stack[cat] as readonly string[]).map((tech) => (
-                    <span key={tech} className="tech-badge">{tech}</span>
-                  ))}
-                </div>
-              </div>
-            </RevealWrapper>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
 
-/* ── Client Strip ────────────────────────────────────────────── */
-function ClientStrip() {
-  const clients = [
-    { name: "Consensus.ai", logo: "/images/consensus-ai.png" },
-    { name: "GreenAxis",    logo: "/images/green-axis.png"   },
-    { name: "Observex",     logo: "/images/observex.jpg"     },
-  ];
-  return (
-    <section style={{ background: "var(--bg)", borderTop: "1px solid var(--border-2)" }}>
-      <div style={{ maxWidth: "var(--max-w)", margin: "0 auto", padding: "3rem 2rem", display: "flex", alignItems: "center", gap: "3rem", flexWrap: "wrap" }}>
-        <p style={{ fontSize: "0.68rem", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--fg-faint)", flexShrink: 0 }}>
-          AI Systems Built For
-        </p>
-        <div style={{ display: "flex", alignItems: "center", gap: "2.5rem", flexWrap: "wrap" }}>
-          {clients.map((c) => (
-            <div key={c.name} className="client-logo" style={{ height: 32 }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={c.logo} alt={c.name} style={{ height: "100%", width: "auto", maxWidth: 110, objectFit: "contain", display: "block" }} />
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /* ── Page ────────────────────────────────────────────────────── */
 export default function Home() {
@@ -99,13 +40,11 @@ export default function Home() {
       <Nav />
       <main>
         <HeroSection />
-        <ClientStrip />
         <ManifestoSection />
         <ServicesSection />
         <FeaturedWorkSection />
         <WhyAltiqSection />
         <ProcessSection />
-        <TechStackSection />
         <CtaSection />
       </main>
       <Footer />

@@ -178,7 +178,7 @@ export default function HeroSection() {
               fontSize: "clamp(5rem, 22vw, 20rem)",
               fontWeight: 600,
               letterSpacing: "-0.055em",
-              color: "#F0E8E4",
+              color: "#9A9A9A",
               lineHeight: 0.88,
               display: "block",
             }}

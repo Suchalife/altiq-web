@@ -100,41 +100,28 @@ export default function WorkPage() {
                 }}
                 className="wk-project-row"
               >
-                {/* Image side */}
+                {/* Logo side */}
                 <div
                   style={{
-                    aspectRatio: "21 / 9",
+                    aspectRatio: "16 / 9",
                     borderRadius: "12px",
                     overflow: "hidden",
-                    background: "var(--bg-deep)",
                     position: "relative",
                     order: idx % 2 === 0 ? 0 : 1,
                   }}
                 >
-                  {p.heroImage ? (
-                    <Image
-                      src={p.heroImage}
-                      alt={p.name}
-                      fill
-                      style={{ objectFit: "cover", objectPosition: "center 10%", transition: "transform 0.55s cubic-bezier(0.22,1,0.36,1)" }}
-                      className="wk-img"
-                      sizes="(max-width: 768px) 100vw, 640px"
-                      quality={90}
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        position: "absolute", inset: 0,
-                        background: `linear-gradient(135deg, ${p.brandColor}20, ${p.brandColor}50)`,
-                        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1rem",
-                      }}
-                    >
-                      <Image src={p.logo} alt={p.name} width={160} height={60} style={{ objectFit: "contain", opacity: 0.35 }} />
-                      <span style={{ fontSize: "0.65rem", color: "var(--fg-faint)", letterSpacing: "0.1em", textTransform: "uppercase", background: "rgba(240,232,228,0.7)", padding: "0.18rem 0.55rem", borderRadius: "100px" }}>
-                        Image coming soon
-                      </span>
-                    </div>
-                  )}
+                  <Image
+                    src={p.logo}
+                    alt={p.name}
+                    fill
+                    style={{
+                      objectFit: "cover",
+                      objectPosition: p.slug === "consensus-ai" ? "center 70%" : "center center",
+                      transition: "transform 0.55s cubic-bezier(0.22,1,0.36,1)",
+                    }}
+                    className="wk-img"
+                    sizes="(max-width: 768px) 100vw, 640px"
+                  />
                 </div>
 
                 {/* Text side */}
@@ -208,7 +195,7 @@ export default function WorkPage() {
           border-color: var(--border);
         }
         .wk-project-row:hover .wk-img {
-          transform: scale(1.04);
+          transform: scale(1.08);
         }
         @media (max-width: 768px) {
           .wk-project-row {
